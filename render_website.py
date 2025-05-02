@@ -1,23 +1,27 @@
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from livereload import Server
 import json
 
-with open("meta_data.json", "r", encoding="utf-8") as my_file:
-    meta_data = json.load(my_file)
 
-env = Environment(
-    loader=FileSystemLoader('.'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
+def render_web():
+    with open("meta_data.json", "r", encoding="utf-8") as my_file:
+        meta_data = json.load(my_file)
 
-template = env.get_template('template.html')
+    env = Environment(
+        loader=FileSystemLoader('.'),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
 
-rendered_page = template.render(meta_data = meta_data)
+    template = env.get_template('template.html')
+    rendered_page = template.render(meta_data=meta_data)
 
-with open('index.html', 'w', encoding="utf8") as file:
-    file.write(rendered_page)
+    with open('index.html', 'w', encoding="utf8") as file:
+        file.write(rendered_page)
 
-server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-server.serve_forever()
-print("server started")
+
+if __name__ == '__main__':
+    server = Server()
+    render_web()
+    server.watch('template.html', render_web)
+    server.watch('meta_data.json', render_web)
+    server.serve(root='.')
