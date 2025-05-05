@@ -1,22 +1,35 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
-import json
-
+from more_itertools import chunked
+import json, os
 
 def render_web():
     with open("meta_data.json", "r", encoding="utf-8") as my_file:
-        meta_data = json.load(my_file)
+        library = json.load(my_file)
+
+
+    os.makedirs('pages', exist_ok=True)
+
 
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
     )
-
     template = env.get_template('template.html')
-    rendered_page = template.render(meta_data=meta_data)
 
-    with open('index.html', 'w', encoding="utf8") as file:
-        file.write(rendered_page)
+
+    chunked_books = list(chunked(library, 10))
+    total_pages = len(chunked_books)
+
+    for page_num, books_chunk in enumerate(chunked_books, 1):
+        rendered_page = template.render(
+            books=books_chunk,
+            current_page=page_num,
+            total_pages=total_pages
+        )
+        page_filename = f'pages/page_{page_num}.html'
+        with open(page_filename, 'w', encoding='utf-8') as page_file:
+            page_file.write(rendered_page)
 
 
 if __name__ == '__main__':
