@@ -13,8 +13,8 @@
 </head>
 <body>
 <div class="container">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
+    <nav aria-label="Page navigation" class="row justify-content-md-center mt-3">
+        <ul class="pagination border">
             <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
                 <a class="page-link"
                    href="{% if current_page > 1 %}page_{{current_page-1}}.html{% else %}#{% endif %}"
@@ -46,6 +46,9 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ book.title }}</h5>
                             <p class="card-text">{{ book.author }}</p>
+                                {% for genre in book.genres.split(', ') %}
+                                    <h6><span class="badge badge-secondary">{{ genre.strip('.') }}</span></h6>
+                                {% endfor %}
                             <p class="card-text"><a href="../{{ book.book_path|urlencode }}" target="_blank">Читать</a>
                             </p>
                         </div>
@@ -65,6 +68,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ book.title }}</h5>
                             <p class="card-text">{{ book.author }}</p>
+                            <h6><span class="badge badge-secondary">{{ book.genres }}</span></h6>
                             <p class="card-text"><a href="../{{ book.book_path|urlencode }}" target="_blank">Читать</a>
                             </p>
                         </div>

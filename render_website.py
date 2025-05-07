@@ -21,6 +21,10 @@ def render_web():
     chunked_books = list(chunked(library, 10))
     total_pages = len(chunked_books)
 
+    for book in library:
+        if isinstance(book.get('genres'), str):
+            book['genres'] = [g.strip() for g in book['genres'].split(',') if g.strip()]
+
     for page_num, books_chunk in enumerate(chunked_books, 1):
         rendered_page = template.render(
             books=books_chunk,
