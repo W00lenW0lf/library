@@ -1,20 +1,17 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <title>My library</title>
+    <link rel="icon" href="data:,">
 </head>
 <body>
 <div class="container">
-    <nav aria-label="Page navigation" class="row justify-content-md-center mt-3">
-        <ul class="pagination border">
+    <nav aria-label="Page navigation" class="row justify-content-center mt-3">
+        <ul class="pagination">
             <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
                 <a class="page-link"
                    href="{% if current_page > 1 %}page_{{current_page-1}}.html{% else %}#{% endif %}"
@@ -23,7 +20,9 @@
                 </a>
             </li>
             {% for page_num in range(1, total_pages+1) %}
-            <li class="page-item {% if page_num == current_page %}active{% endif %}"><a class="page-link" href="page_{{page_num}}.html">{{page_num}}</a></li>
+            <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                <a class="page-link" href="page_{{page_num}}.html">{{page_num}}</a>
+            </li>
             {% endfor %}
             <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
                 <a class="page-link"
@@ -34,43 +33,25 @@
             </li>
         </ul>
     </nav>
-    <div class="row justify-content-md-center">
+    <div class="row">
         {% for book in books %}
-        <div class="col">
-            <div class="card mb-3" style="width: 540px;">
-                <div class="row no-gutters">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="row no-gutters h-100">
                     <div class="col-md-4">
-                        <img src="../{{ book.img_src }}" class="card-img" alt="{{ book.genres }}">
+                        <img src="../{{ book.img_src }}" class="card-img h-100" alt="{{ book.title }}"
+                             style="object-fit: cover;">
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title">{{ book.title }}</h5>
                             <p class="card-text">{{ book.author }}</p>
+                            <div class="mb-2">
                                 {% for genre in book.genres.split(', ') %}
-                                    <h6><span class="badge badge-secondary">{{ genre.strip('.') }}</span></h6>
+                                <span class="badge badge-secondary mr-1">{{ genre.strip(' .') }}</span>
                                 {% endfor %}
-                            <p class="card-text"><a href="../{{ book.book_path|urlencode }}" target="_blank">Читать</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-        {% for book in books %}
-        <div class="col">
-            <div class="card mb-3" style="width: 540px;">
-                <div class="row no-gutters">
-                    <div class="col-md-4">
-                        <img src="../{{ book.img_src }}" class="card-img" alt="{{ book.genres }}">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ book.title }}</h5>
-                            <p class="card-text">{{ book.author }}</p>
-                            <h6><span class="badge badge-secondary">{{ book.genres }}</span></h6>
-                            <p class="card-text"><a href="../{{ book.book_path|urlencode }}" target="_blank">Читать</a>
-                            </p>
+                            </div>
+                            <a href="../{{ book.book_path|urlencode }}" class="link" target="_blank">Читать</a>
                         </div>
                     </div>
                 </div>
@@ -79,5 +60,7 @@
         {% endfor %}
     </div>
 </div>
+<script src="../js/jquery-3.3.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
