@@ -2,23 +2,38 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 from more_itertools import chunked
 import json, os
+import urllib.parse
 
-def render_web():
-    with open("meta_data.json", "r", encoding="utf-8") as my_file:
+BOOKS_PER_PAGE = 10
+
+
+def source_input():
+    data_file_path = input('Введите путь к файлу с данными (по умолчанию: meta_data.json): ').strip()
+    if not data_file_path:
+        data_file_path = 'meta_data.json'
+
+    config_file_path = input('Введите путь к конфигурационному файлу (по умолчанию: template.html): ').strip()
+    if not config_file_path:
+        config_file_path = 'template.html'
+
+    return data_file_path, config_file_path
+
+
+def main(data_file_path, config_file_path):
+    books_on_page = 10
+    with open(data_file_path, 'r', encoding='utf-8') as my_file:
         library = json.load(my_file)
 
-
     os.makedirs('pages', exist_ok=True)
-
 
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
     )
-    template = env.get_template('template.html')
+    env.filters['urlencode'] = urlencode_filter
+    template = env.get_template(config_file_path)
 
-
-    chunked_books = list(chunked(library, 10))
+    chunked_books = list(chunked(library, BOOKS_PER_PAGE))
     total_pages = len(chunked_books)
 
     for page_num, books_chunk in enumerate(chunked_books, 1):
@@ -32,9 +47,15 @@ def render_web():
             page_file.write(rendered_page)
 
 
+def urlencode_filter(value):
+    return urllib.parse.quote(value)
+
+
 if __name__ == '__main__':
+    data_path, config_path = source_input()
+    main(data_path, config_path)
+
     server = Server()
-    render_web()
-    server.watch('template.html', render_web)
-    server.watch('meta_data.json', render_web)
+    server.watch(config_path, lambda: main(data_path, config_path))
+    server.watch(data_path, lambda: main(data_path, config_path))
     server.serve(root='.')
